@@ -228,6 +228,7 @@ h1,h2,h3,.logo__text{font-family:'Oxanium',system-ui,sans-serif;line-height:1.08
 }
 /* sem halo/aura atrás dele — a luz vem só do próprio cenário */
 .hero__glow{display:none}
+.hero__figure picture{display:contents}
 .hero__prof{
   position:relative;z-index:2;
   width:100%;height:100%;
@@ -235,28 +236,15 @@ h1,h2,h3,.logo__text{font-family:'Oxanium',system-ui,sans-serif;line-height:1.08
   object-position:50% 6%;   /* corta na altura da cintura, mantendo a proporção */
   /* sem sombra projetada: só 1px escuro colado na borda para matar a franja do recorte,
      e um leve ajuste de cor para ele pertencer à mesma cena do fundo */
-  filter:
-    brightness(.64) contrast(.95) saturate(.70) sepia(.14) hue-rotate(-6deg)
-    drop-shadow(0 0 1px rgba(10,10,11,.85));
-  opacity:.95;
-  /* dissolve nas 4 direções: base junta com a próxima seção,
-     laterais/topo evitam qualquer aresta reta da moldura da imagem */
-  -webkit-mask-image:
-    linear-gradient(180deg,transparent 0%,#000 6%,#000 58%,rgba(0,0,0,.85) 74%,rgba(0,0,0,.35) 88%,transparent 100%),
-    linear-gradient(90deg,transparent 0%,#000 9%,#000 91%,transparent 100%);
-  mask-image:
-    linear-gradient(180deg,transparent 0%,#000 6%,#000 58%,rgba(0,0,0,.85) 74%,rgba(0,0,0,.35) 88%,transparent 100%),
-    linear-gradient(90deg,transparent 0%,#000 9%,#000 91%,transparent 100%);
-  -webkit-mask-composite:source-in;
-  mask-composite:intersect;
+  /* PNG já recortado: sem sombra, sem halo, só grade de cor para casar com a cena */
+  filter:brightness(.68) contrast(.97) saturate(.74) sepia(.13) hue-rotate(-6deg);
+  opacity:.96;
+  /* só a base dissolve, unindo com a próxima seção */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 60%,rgba(0,0,0,.8) 76%,rgba(0,0,0,.3) 90%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 60%,rgba(0,0,0,.8) 76%,rgba(0,0,0,.3) 90%,transparent 100%);
 }
-/* camada extra de escurecimento na base, colando a foto no fundo */
-.hero__figure::after{
-  content:'';position:absolute;left:0;right:0;bottom:0;height:40%;z-index:3;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(10,10,11,.28) 50%,rgba(10,10,11,.66) 80%,rgba(10,10,11,.9));
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
-}
+/* a máscara da própria imagem já faz a junção — sem camadas retangulares extras */
+.hero__figure::after{content:none}
 
 /* ---------------- SEÇÕES ---------------- */
 .section{padding:104px 0;position:relative}
@@ -519,16 +507,20 @@ h1,h2,h3,.logo__text{font-family:'Oxanium',system-ui,sans-serif;line-height:1.08
 
 /* ---------------- RESPONSIVO ---------------- */
 @media (max-width:980px){
-  .hero{padding:76px 0 0;min-height:auto}
+  .hero{padding:74px 0 0;min-height:auto;--pw:min(76vw,350px)}
   .hero__grid{grid-template-columns:1fr;text-align:center;gap:0}
-  /* a headline sobe por cima dele, da cintura para baixo */
-  .hero__copy{position:relative;z-index:3;margin-top:-132px;padding-bottom:40px}
-  .hero__title{text-shadow:0 6px 34px rgba(10,10,11,.95),0 2px 10px rgba(10,10,11,.9)}
+  /* só da cintura para cima, com a base perdendo opacidade sob a headline */
+  .hero__figure{order:-1;height:auto;margin:0;justify-content:center;overflow:visible}
+  .hero__prof{
+    width:var(--pw);height:calc(var(--pw) * 1.34);
+    object-fit:cover;object-position:50% 0;   /* corta na cintura */
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.55) 76%,rgba(0,0,0,.18) 90%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.55) 76%,rgba(0,0,0,.18) 90%,transparent 100%);
+  }
+  .hero__copy{position:relative;z-index:4;margin-top:calc(var(--pw) * -0.42);padding-bottom:40px}
+  .hero__title{text-shadow:0 2px 18px rgba(10,10,11,.75)}
   .hero__sub{margin-inline:auto}
   .hero__bullets,.hero__cta{justify-content:center}
-  .hero__figure{order:-1;height:min(60svh,540px);margin:0 -6% 0}
-  .hero__prof{object-position:50% 2%}
-  .hero__figure::after{height:52%}
   .hero__fade{height:150px}
   .split{grid-template-columns:1fr;gap:34px}
   .split__media{order:2}
